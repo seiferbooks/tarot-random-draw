@@ -4,6 +4,7 @@ A static 78-card Rider–Waite–Smith tarot drawer with upright and reversed or
 
 - Secure random draw in the browser
 - No repeated cards within a round
+- Short shuffle, deal, and card-reveal animation
 - 1909 Rider–Waite–Smith public-domain artwork
 - Numbered multiline results with copy support
 
