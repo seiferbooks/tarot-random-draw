@@ -1,0 +1,53 @@
+name: Deploy Tarot Site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://tarot-random-draw.shekteddy.chatgpt.site"
+          mkdir -p _site/cards
+          curl -fsSL "$base/" -o _site/index.html
+          for n in $(seq -w 0 21); do
+            curl -fsSL "$base/cards/major-$n.webp" -o "_site/cards/major-$n.webp"
+          done
+          for suit in cups swords wands pentacles; do
+            for n in $(seq -w 1 14); do
+              curl -fsSL "$base/cards/$suit-$n.webp" -o "_site/cards/$suit-$n.webp"
+            done
+          done
+          curl -fsSL "$base/cards/SOURCE.txt" -o _site/cards/SOURCE.txt
+          touch _site/.nojekyll
+          test "$(find _site/cards -type f -name '*.webp' | wc -l)" -eq 78
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
