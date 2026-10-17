@@ -9,3 +9,10 @@ A static 78-card Rider–Waite–Smith tarot drawer with upright and reversed or
 - Mobile-friendly numeric input, result tabs, and multiline copy support
 
 The GitHub Pages deployment copies the current static site into a Pages artifact, including all 78 card images.
+
+## Available versions
+
+- [Illustrated version](https://seiferbooks.github.io/tarot-random-draw/)
+- [Lightweight version](https://seiferbooks.github.io/tarot-random-draw/simple/) — no card images or shuffle/reveal animation
+
+The lightweight source is stored at `simple/index.html`.

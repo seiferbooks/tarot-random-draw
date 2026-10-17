@@ -21,12 +21,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Download the static site
         shell: bash
         run: |
           set -euo pipefail
           base="https://tarot-random-draw.shekteddy.chatgpt.site"
-          mkdir -p _site/cards
+          mkdir -p _site/cards _site/simple
           curl -fsSL "$base/" -o _site/index.html
           for n in $(seq -w 0 21); do
             curl -fsSL "$base/cards/major-$n.webp" -o "_site/cards/major-$n.webp"
@@ -37,7 +40,9 @@ jobs:
             done
           done
           curl -fsSL "$base/cards/SOURCE.txt" -o _site/cards/SOURCE.txt
+          cp simple/index.html _site/simple/index.html
           touch _site/.nojekyll
+          test -s _site/simple/index.html
           test "$(find _site/cards -type f -name '*.webp' | wc -l)" -eq 78
 
       - name: Configure GitHub Pages
