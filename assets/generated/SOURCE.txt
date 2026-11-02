@@ -1,7 +1,7 @@
 Generated for this project on 2026-11-02.
 
-- oracle-card.webp: original celestial and botanical oracle-card background
-- lenormand-card.webp: original nineteenth-century engraved Lenormand-card background
+- oracle-card.webp: original celestial and botanical oracle-card background (kept as an earlier design asset)
+- lenormand-card.webp: original nineteenth-century engraved Lenormand-card background (kept as an earlier design asset)
 - jiaobei-card.webp: original temple scene with a pair of red wooden jiaobei blocks
 
-The three generated source images were resized to 600 x 900 and exported as optimized WebP assets for the site. Card names, symbols, orientation labels, and jiaobei outcomes are rendered by the webpage.
+The site also includes 44 individually illustrated oracle cards in assets/oracle and 36 individually illustrated Lenormand cards in assets/lenormand. They were generated as original contact sheets, cropped into individual scenes, and exported as optimized WebP assets. Card names, orientation labels, and jiaobei outcomes are rendered by the webpage.

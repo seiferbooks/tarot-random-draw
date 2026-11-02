@@ -12,7 +12,7 @@ A static divination site with animated shuffle, deal, and reveal sequences.
 - 1909 Rider–Waite–Smith public-domain artwork
 - Mobile-friendly numeric input, result tabs, and multiline copy support
 
-The repository contains all required assets. GitHub Pages packages `animated/index.html`, three optimized generated WebP assets, the lightweight version, and all 78 tarot images without depending on another hosted site.
+The repository contains all required assets. GitHub Pages packages `animated/index.html`, 44 individual oracle illustrations, 36 individual Lenormand illustrations, the jiaobei artwork, the lightweight version, and all 78 tarot images without depending on another hosted site.
 
 ## Available versions
 

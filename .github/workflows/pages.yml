@@ -30,7 +30,7 @@ jobs:
           set -euo pipefail
           mkdir -p _site/cards _site/simple _site/assets
           cp animated/index.html _site/index.html
-          cp -R assets/generated _site/assets/generated
+          cp -R assets/generated assets/oracle assets/lenormand _site/assets/
           cp cards/*.webp _site/cards/
           cp cards/SOURCE.txt _site/cards/SOURCE.txt
           cp simple/index.html _site/simple/index.html
@@ -38,6 +38,8 @@ jobs:
           test -s _site/index.html
           test -s _site/simple/index.html
           test "$(find _site/assets/generated -type f -name '*.webp' | wc -l)" -eq 3
+          test "$(find _site/assets/oracle -type f -name '*.webp' | wc -l)" -eq 44
+          test "$(find _site/assets/lenormand -type f -name '*.webp' | wc -l)" -eq 36
           test "$(find _site/cards -type f -name '*.webp' | wc -l)" -eq 78
 
       - name: Configure GitHub Pages
