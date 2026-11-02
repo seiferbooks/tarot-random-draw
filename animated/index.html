@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="塔羅牌、神諭卡、雷諾曼卡及傳統擲筊隨機占卜工具。">
+  <title>隨機占卜 · 四種方式</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{color-scheme:dark;--bg:#111b19;--panel:#1b2924;--line:#3d4b3a;--gold:#d8c895;--muted:#b5bdae;--ink:#ece8dc}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    main{max-width:1080px;margin:auto;padding:48px 24px}
+    header{display:flex;justify-content:space-between;color:#b5bdaa;font-size:13px;letter-spacing:2px;border-bottom:1px solid #34443b;padding-bottom:22px}
+    .hero{text-align:center;padding:55px 0 30px}.star{font-size:42px;color:#c7b580}
+    h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(32px,6vw,52px);font-weight:400;margin:15px 0}
+    p{color:var(--muted);line-height:1.8}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px;max-width:620px;margin:0 auto 42px}
+    label{display:block;font-size:19px;margin-bottom:16px}
+    .method-picker{border:0;padding:0;margin:0 0 22px}.method-picker legend{font-size:15px;color:var(--gold);margin-bottom:10px}
+    .method-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .method-choice{display:flex;align-items:center;gap:9px;margin:0;padding:12px;border:1px solid #435646;border-radius:10px;background:#16231f;font-size:14px;cursor:pointer}
+    .method-choice:has(input:checked){border-color:var(--gold);background:#22342b}.method-choice input{width:18px;height:18px;margin:0;accent-color:var(--gold)}
+    .method-choice small{display:block;color:#93a395;font-size:11px;margin-top:2px}
+    .controls{display:flex;gap:12px}input[type=number]{width:120px;background:var(--bg);border:1px solid #647359;border-radius:9px;padding:13px;color:#fff;font:inherit}
+    button{flex:1;background:var(--gold);border:0;border-radius:9px;font:inherit;color:#20291f;padding:14px;cursor:pointer}button:hover{background:#eadbae}
+    button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:3px}button:disabled,input:disabled{opacity:.62;cursor:wait}
+    .repeat-option{display:flex;align-items:center;gap:11px;margin:18px 0 0;padding:13px 14px;border:1px solid #435646;border-radius:10px;background:#16231f;font-size:15px;cursor:pointer}
+    .repeat-option input{width:20px;height:20px;margin:0;accent-color:var(--gold)}.repeat-option span{line-height:1.45}
+    .mode-hint{font-size:12px;color:#93a395;margin:7px 2px 0}.note{font-size:13px;margin-bottom:0}#error{color:#ffc8b5;min-height:20px;font-size:14px;margin:10px 0 0}
+    .resulthead{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.resulthead h2{font-size:20px;font-weight:400}.resulthead.is-working{color:#c7b580}.tag{font-size:12px;color:var(--muted)}
+    .view-tabs{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:10;display:flex;gap:4px;max-width:360px;margin:0 auto 20px;padding:4px;border:1px solid #4b5c4e;border-radius:12px;background:rgba(17,27,25,.92);box-shadow:0 8px 24px rgba(0,0,0,.22);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    .view-tab{padding:10px 14px;border:1px solid transparent;background:transparent;color:var(--muted)}.view-tab:hover{background:#24352e}.view-tab[aria-selected="true"]{border-color:#7c805c;background:var(--gold);color:#20291f}.view-tab:disabled{cursor:wait}
+    #summary{display:block;width:100%;background:var(--panel);border:1px solid #647359;border-radius:9px;padding:14px;color:var(--ink);font:inherit;line-height:1.9;resize:vertical;white-space:pre-wrap}
+    #resultText{max-width:720px;margin:0 auto 24px;scroll-margin-top:70px;animation:revealText .28s ease-out}#copyResults{margin-top:12px}#copyStatus{font-size:13px;min-height:20px}[hidden]{display:none!important}
+    #cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:18px}
+    .card{animation:dealCard .42s cubic-bezier(.2,.75,.35,1) both;perspective:1000px;min-width:0}.card-inner{position:relative;width:100%;display:grid;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.75,.3,1)}.card.is-flipped .card-inner{transform:rotateY(180deg)}
+    .card-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid #7c805c;border-radius:12px;padding:12px;background:#22342b;text-align:center;overflow:hidden}.card-front{transform:rotateY(180deg)}
+    .card-back-face{position:relative;min-height:330px;background:#192a25}.card-back{position:absolute;inset:12px;border:1px solid #c7b580;border-radius:8px;background-color:#192a25;background-image:radial-gradient(circle at center,#c7b580 0 3px,transparent 4px),radial-gradient(circle at center,transparent 0 20px,#7c805c 21px 22px,transparent 23px),repeating-linear-gradient(45deg,transparent 0 7px,#263e34 7px 9px);box-shadow:inset 0 0 0 5px #192a25,inset 0 0 0 6px #7c805c}.card-back-face::after{content:'✦';position:absolute;inset:0;display:grid;place-items:center;color:var(--gold);font-size:27px}
+    .art{position:relative;aspect-ratio:11/19;overflow:hidden;border:1px solid #5e7050;border-radius:8px;background:#151c18}.art img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}.reversed .art img{transform:rotate(180deg)}
+    .generated-art .art-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;color:#f5df9b;text-shadow:0 2px 10px #000;text-align:center;background:linear-gradient(180deg,transparent 0 42%,rgba(5,14,11,.18) 58%,rgba(5,14,11,.72) 100%)}
+    .overlay-deck{font-size:10px;letter-spacing:2px;text-transform:uppercase}.overlay-symbol{font-family:Georgia,"Times New Roman",serif;font-size:clamp(46px,9vw,74px);line-height:1;margin:auto 0}.overlay-name{font-family:Georgia,"Times New Roman",serif;font-size:17px}.overlay-index{font-size:11px;letter-spacing:2px;margin-top:5px}
+    .kind-lenormand .art-overlay{color:#402817;text-shadow:0 1px 4px #fff;background:linear-gradient(180deg,rgba(255,247,225,.06),rgba(255,247,225,.35))}.kind-lenormand .overlay-symbol{font-size:62px}
+    .kind-jiaobei .art-overlay{justify-content:flex-end;color:#f7df9f;background:linear-gradient(180deg,transparent 0 48%,rgba(41,5,5,.18) 58%,rgba(41,5,5,.9) 100%)}.kind-jiaobei .overlay-symbol{font-size:44px;margin:0 0 10px}.kind-jiaobei .overlay-name{font-size:22px}
+    .card h3{font-size:17px;font-weight:500;margin:18px 0 5px}.position{font-size:13px;color:var(--gold);padding-bottom:7px;min-height:28px}.order{font-size:11px;color:var(--muted);margin-top:8px}
+    #empty{text-align:center;padding:20px 0 50px;color:#809181}
+    .shuffle-stage{height:230px;display:grid;place-items:center;position:relative;margin-bottom:20px;overflow:hidden}.shuffle-label{position:absolute;bottom:9px;color:#c7b580;font-size:13px;letter-spacing:2px}
+    .shuffle-deck{width:92px;aspect-ratio:11/19;position:relative;filter:drop-shadow(0 14px 18px #08100c)}.shuffle-card{position:absolute;inset:0;border:1px solid #c7b580;border-radius:8px;background-color:#192a25;background-image:radial-gradient(circle at center,#c7b580 0 3px,transparent 4px),radial-gradient(circle at center,transparent 0 20px,#7c805c 21px 22px,transparent 23px),repeating-linear-gradient(45deg,transparent 0 7px,#263e34 7px 9px);box-shadow:inset 0 0 0 5px #192a25,inset 0 0 0 6px #7c805c}.shuffle-card:nth-child(1){animation:shuffleLeft .45s ease-in-out infinite alternate}.shuffle-card:nth-child(2){animation:shuffleRight .45s ease-in-out .12s infinite alternate}.shuffle-card:nth-child(3){animation:shuffleLift .38s ease-in-out .06s infinite alternate}
+    .jiaobei-shuffle{display:none;width:100%;height:100%;object-fit:cover;border:1px solid #c7b580;border-radius:8px}.shuffle-stage.is-jiaobei .shuffle-card{display:none}.shuffle-stage.is-jiaobei .jiaobei-shuffle{display:block;animation:jiaobeiCast .5s ease-in-out infinite alternate}
+    footer{text-align:center;border-top:1px solid #34443b;margin-top:48px;padding-top:22px;color:#829381;font-size:12px}footer a{color:#c7b580;text-underline-offset:3px}
+    @keyframes revealText{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@keyframes shuffleLeft{to{transform:translateX(-48px) rotate(-9deg)}}@keyframes shuffleRight{to{transform:translateX(48px) rotate(9deg)}}@keyframes shuffleLift{to{transform:translateY(-13px) rotate(2deg)}}@keyframes jiaobeiCast{from{transform:translateY(4px) rotate(-4deg)}to{transform:translateY(-9px) rotate(4deg)}}@keyframes dealCard{from{opacity:0;transform:translateY(-75px) scale(.62) rotate(-5deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+    @media(max-width:480px){main{padding:25px 18px}.hero{padding:35px 0 20px}.panel{padding:22px}.method-options{grid-template-columns:1fr}.controls{align-items:stretch}#cards{grid-template-columns:repeat(2,minmax(0,1fr))}.shuffle-stage{height:205px}.shuffle-deck{width:78px}.card-back-face{min-height:300px}.view-tabs{max-width:none}.position{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){.shuffle-card,.jiaobei-shuffle,.card,#resultText{animation:none}.card-inner{transition:none}}
+  </style>
+</head>
+<body>
+<main>
+  <header><span>✧ 隨機占卜</span><span>4 METHODS</span></header>
+  <div class="hero"><div class="star" aria-hidden="true">☾</div><h1>此刻，向未知發問。</h1><p>塔羅、神諭、雷諾曼，或者傳統擲筊。每一輪，都係全新開始。</p></div>
+  <form class="panel" id="drawForm">
+    <fieldset class="method-picker"><legend>揀占卜方式</legend><div class="method-options">
+      <label class="method-choice" for="methodTarot"><input id="methodTarot" name="method" type="radio" value="tarot" checked><span>塔羅牌<small>78 張 Rider–Waite</small></span></label>
+      <label class="method-choice" for="methodOracle"><input id="methodOracle" name="method" type="radio" value="oracle"><span>神諭卡<small>原創 44 張</small></span></label>
+      <label class="method-choice" for="methodLenormand"><input id="methodLenormand" name="method" type="radio" value="lenormand"><span>雷諾曼<small>傳統 36 張</small></span></label>
+      <label class="method-choice" for="methodJiaobei"><input id="methodJiaobei" name="method" type="radio" value="jiaobei"><span>擲筊<small>傳統一對筊杯</small></span></label>
+    </div></fieldset>
+    <label id="countLabel" for="count">今輪想抽幾多張牌？</label>
+    <div class="controls"><input id="count" type="number" inputmode="numeric" pattern="[0-9]*" enterkeyhint="go" min="1" max="78" step="1" required placeholder="1–78" aria-describedby="error note modeHint"><button id="drawButton" type="submit">洗牌 · 抽牌 ↗</button></div>
+    <label class="repeat-option" id="repeatOption" for="allowDuplicates"><input id="allowDuplicates" type="checkbox" aria-describedby="modeHint"><span>容許今輪抽到重複嘅牌</span></label>
+    <p class="mode-hint" id="modeHint">關閉時，每張牌同一輪只會出現一次。</p><p id="error" role="alert"></p><p class="note" id="note">塔羅牌不重複模式最多 78 張 · 正逆位各 50%</p>
+  </form>
+  <section aria-live="polite">
+    <div class="resulthead"><h2 id="heading">你嘅結果</h2><span class="tag" id="round">尚未開始</span></div>
+    <div class="view-tabs" id="viewTabs" role="tablist" aria-label="占卜結果顯示方式" hidden><button class="view-tab" id="cardsTab" type="button" role="tab" aria-selected="true" aria-controls="cards">圖像</button><button class="view-tab" id="textTab" type="button" role="tab" aria-selected="false" aria-controls="resultText">文字結果</button></div>
+    <div id="empty">✧ 揀好張數，開始今次抽牌。</div>
+    <div class="shuffle-stage" id="shuffleStage" hidden aria-label="正在準備結果"><div class="shuffle-deck" aria-hidden="true"><span class="shuffle-card"></span><span class="shuffle-card"></span><span class="shuffle-card"></span><img class="jiaobei-shuffle" src="assets/generated/jiaobei-card.webp" alt=""></div><div class="shuffle-label" id="shuffleLabel">正在洗牌…</div></div>
+    <div id="cards" role="tabpanel" aria-labelledby="cardsTab"></div>
+    <div id="resultText" role="tabpanel" aria-labelledby="textTab" hidden><textarea id="summary" readonly aria-label="今輪占卜文字結果" rows="3" spellcheck="false"></textarea><button type="button" id="copyResults">複製結果</button><p id="copyStatus" role="status"></p></div>
+  </section>
+  <footer>78 張塔羅牌 · 44 張神諭卡 · 36 張雷諾曼卡 · 傳統擲筊<br><a href="https://commons.wikimedia.org/wiki/Category:Rider-Waite_tarot_deck_(Roses_%26_Lilies)" target="_blank" rel="noopener">1909 Rider–Waite–Smith 公有領域牌圖 · Wikimedia Commons</a><br>神諭、雷諾曼及擲筊圖像為本網站原創圖像</footer>
+</main>
+<script>
+const majors=['愚者','魔術師','女祭司','皇后','皇帝','教皇','戀人','戰車','力量','隱者','命運之輪','正義','吊人','死神','節制','惡魔','高塔','星星','月亮','太陽','審判','世界'];
+const ranks=['一','二','三','四','五','六','七','八','九','十','侍者','騎士','皇后','國王'];
+const suits=[['權杖','wands'],['聖杯','cups'],['寶劍','swords'],['錢幣','pentacles']];
+const tarotDeck=[...majors.map((name,i)=>({type:'tarot',name,image:'cards/major-'+String(i).padStart(2,'0')+'.webp'})),...suits.flatMap(([suit,slug])=>ranks.map((rank,i)=>({type:'tarot',name:suit+rank,image:'cards/'+slug+'-'+String(i+1).padStart(2,'0')+'.webp'})))];
+const oracleNames=['新開始','清晰','信任','勇氣','界線','休息','轉化','釋放','耐心','行動','直覺','真相','同行','獨處','豐盛','平衡','保護','療癒','創造','選擇','接納','寬恕','喜悅','感恩','根基','流動','願景','專注','溝通','連結','自由','重整','機會','節奏','靜心','探索','回歸','承諾','溫柔','覺醒','希望','完成','神秘','同步'];
+const oracleSymbols=['☀','☾','✦','◇','∞','☁','△','▽','◎','✧','⌁'];
+const oracleDeck=oracleNames.map((name,i)=>({type:'oracle',name,symbol:oracleSymbols[i%oracleSymbols.length],number:String(i+1).padStart(2,'0'),image:'assets/generated/oracle-card.webp'}));
+const lenormandNames=['騎士','四葉草','船','屋','樹','雲','蛇','棺材','花束','鐮刀','鞭子','鳥','小孩','狐狸','熊','星星','鸛','狗','高塔','花園','山','道路','老鼠','心','戒指','書','信','男士','女士','百合','太陽','月亮','鎖匙','魚','船錨','十字架'];
+const lenormandSymbols=['♞','☘','⛵','⌂','♣','☁','∿','▱','✿','⚒','〰','♬','◌','◇','◆','✦','⌁','♩','▥','❀','▲','⇄','••','♥','○','▣','✉','♂','♀','⚜','☀','☾','⌘','≋','⚓','✝'];
+const lenormandDeck=lenormandNames.map((name,i)=>({type:'lenormand',name,symbol:lenormandSymbols[i],number:String(i+1).padStart(2,'0'),image:'assets/generated/lenormand-card.webp'}));
+
+function randomInt(n){const buffer=new Uint32Array(1);const limit=4294967296-(4294967296%n);do{crypto.getRandomValues(buffer)}while(buffer[0]>=limit);return buffer[0]%n}
+function draw(sourceDeck,count,allowDuplicates=false,usesOrientation=true){if(!Number.isSafeInteger(count)||count<1||(!allowDuplicates&&count>sourceDeck.length))throw new RangeError(allowDuplicates?'請輸入 1 或以上嘅整數。':'請輸入 1 至 '+sourceDeck.length+' 嘅整數。');const orient=()=>usesOrientation&&randomInt(2)===1;if(allowDuplicates)return Array.from({length:count},()=>({...sourceDeck[randomInt(sourceDeck.length)],reversed:orient()}));const shuffled=sourceDeck.slice();for(let i=shuffled.length-1;i>0;i--){const j=randomInt(i+1);[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}return shuffled.slice(0,count).map(card=>({...card,reversed:orient()}))}
+function castJiaobei(count){if(!Number.isSafeInteger(count)||count<1)throw new RangeError('請輸入 1 或以上嘅整數。');return Array.from({length:count},(_,i)=>{const first=randomInt(2),second=randomInt(2);if(first!==second)return{type:'jiaobei',name:'聖筊',symbol:'◐ ◑',number:String(i+1).padStart(2,'0'),detail:'一正一反 · 表示允許／肯定',image:'assets/generated/jiaobei-card.webp',reversed:false};if(first===0)return{type:'jiaobei',name:'笑筊',symbol:'◐ ◐',number:String(i+1).padStart(2,'0'),detail:'兩面皆平 · 意思未明，可以稍後再問',image:'assets/generated/jiaobei-card.webp',reversed:false};return{type:'jiaobei',name:'陰筊',symbol:'◑ ◑',number:String(i+1).padStart(2,'0'),detail:'兩面皆凸 · 表示否定／暫不適合',image:'assets/generated/jiaobei-card.webp',reversed:false}})}
+
+const methodTarot=document.getElementById('methodTarot');const methodOracle=document.getElementById('methodOracle');const methodLenormand=document.getElementById('methodLenormand');const methodJiaobei=document.getElementById('methodJiaobei');
+const methodInputs=[methodTarot,methodOracle,methodLenormand,methodJiaobei];const duplicateToggle=document.getElementById('allowDuplicates');const countInput=document.getElementById('count');const countLabel=document.getElementById('countLabel');const drawButton=document.getElementById('drawButton');const repeatOption=document.getElementById('repeatOption');const modeHint=document.getElementById('modeHint');const note=document.getElementById('note');const emptyState=document.getElementById('empty');
+function selectedMethod(){if(methodJiaobei.checked)return{type:'jiaobei',name:'擲筊'};if(methodLenormand.checked)return{type:'cards',id:'lenormand',name:'雷諾曼卡',cards:lenormandDeck,usesOrientation:false};if(methodOracle.checked)return{type:'cards',id:'oracle',name:'神諭卡',cards:oracleDeck,usesOrientation:true};return{type:'cards',id:'tarot',name:'塔羅牌',cards:tarotDeck,usesOrientation:true}}
+function updateMode(){const current=selectedMethod();if(current.type==='jiaobei'){countInput.removeAttribute('max');countInput.placeholder='1 或以上';countLabel.textContent='今輪想擲幾多次？';drawButton.textContent='擲筊 ↗';repeatOption.hidden=true;modeHint.hidden=true;emptyState.textContent='✧ 揀好次數，開始擲筊。';note.textContent='聖筊 50% · 笑筊 25% · 陰筊 25%';return}countLabel.textContent='今輪想抽幾多張牌？';drawButton.textContent='洗牌 · 抽牌 ↗';repeatOption.hidden=false;modeHint.hidden=false;emptyState.textContent='✧ 揀好張數，開始今次抽牌。';const orientationText=current.usesOrientation?'正逆位各 50%':'傳統玩法不設正逆位';if(duplicateToggle.checked){countInput.removeAttribute('max');countInput.placeholder='1 或以上';modeHint.textContent='開啟時，每次都由完整'+current.cards.length+'張'+current.name+'重新隨機，同一張牌可以出現多次，抽牌張數不受牌組數量限制。';note.textContent=current.name+'重複模式不限張數 · '+orientationText}else{countInput.setAttribute('max',String(current.cards.length));countInput.placeholder='1–'+current.cards.length;modeHint.textContent='關閉時，每張'+current.name+'同一輪只會出現一次。';note.textContent=current.name+'不重複模式最多 '+current.cards.length+' 張 · '+orientationText}}
+duplicateToggle.addEventListener('change',updateMode);methodInputs.forEach(input=>input.addEventListener('change',updateMode));updateMode();
+
+let round=0;let animating=false;const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const viewTabs=document.getElementById('viewTabs');const cardsTab=document.getElementById('cardsTab');const textTab=document.getElementById('textTab');
+function setResultView(view,scrollToTabs=false){const showingText=view==='text';document.getElementById('cards').hidden=showingText;document.getElementById('resultText').hidden=!showingText;cardsTab.setAttribute('aria-selected',String(!showingText));textTab.setAttribute('aria-selected',String(showingText));if(scrollToTabs)requestAnimationFrame(()=>viewTabs.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}))}
+cardsTab.addEventListener('click',()=>{if(!animating)setResultView('cards',true)});textTab.addEventListener('click',()=>{if(!animating)setResultView('text',true)});
+function preloadImages(items){const urls=[...new Set(items.map(item=>item.image))];return Promise.all(urls.map(url=>new Promise(resolve=>{const image=new Image();image.onload=image.onerror=resolve;image.src=url})))}
+function summaryLine(item,index,total,current){const prefix=total===1?'':(index+1)+'. ';if(current.type==='jiaobei')return prefix+item.name+'（'+item.detail+'）';if(current.usesOrientation)return prefix+item.name+'（'+(item.reversed?'逆位':'正位')+'）';return prefix+item.name}
+function cardArtwork(item,current,index){if(item.type==='tarot')return'<div class="art"><img src="'+item.image+'" alt="'+item.name+'（'+(item.reversed?'逆位':'正位')+'）" loading="'+(index<4?'eager':'lazy')+'" fetchpriority="'+(index<4?'high':'auto')+'" decoding="async"></div>';const deckLabel=item.type==='oracle'?'ORACLE':item.type==='lenormand'?'LENORMAND':'JIAOBEI';return'<div class="art generated-art"><img src="'+item.image+'" alt="" loading="'+(index<4?'eager':'lazy')+'" fetchpriority="'+(index<4?'high':'auto')+'" decoding="async"><div class="art-overlay"><span class="overlay-deck">'+deckLabel+'</span><span class="overlay-symbol">'+item.symbol+'</span><span class="overlay-name">'+item.name+'</span><span class="overlay-index">'+item.number+'</span></div></div>'}
+
+document.getElementById('drawForm').addEventListener('submit',async event=>{
+  event.preventDefault();if(animating)return;const current=selectedMethod();const count=Number(countInput.value);const error=document.getElementById('error');const heading=document.getElementById('heading');const roundTag=document.getElementById('round');const resultText=document.getElementById('resultText');const summary=document.getElementById('summary');const shuffleStage=document.getElementById('shuffleStage');const shuffleLabel=document.getElementById('shuffleLabel');const cards=document.getElementById('cards');
+  try{
+    const result=current.type==='jiaobei'?castJiaobei(count):draw(current.cards,count,duplicateToggle.checked,current.usesOrientation);animating=true;countInput.disabled=true;drawButton.disabled=true;duplicateToggle.disabled=true;methodInputs.forEach(input=>input.disabled=true);viewTabs.hidden=false;cardsTab.disabled=true;textTab.disabled=true;setResultView('cards');error.textContent='';emptyState.hidden=true;resultText.hidden=true;summary.value='';document.getElementById('copyStatus').textContent='';cards.replaceChildren();heading.parentElement.classList.add('is-working');roundTag.textContent='請稍候';shuffleStage.classList.toggle('is-jiaobei',current.type==='jiaobei');shuffleStage.hidden=false;
+    const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;heading.textContent=current.type==='jiaobei'?'正在擲筊…':'正在洗牌…';shuffleLabel.textContent=current.type==='jiaobei'?'正在擲筊…':'正在洗牌…';drawButton.textContent=current.type==='jiaobei'?'筊杯擲出中…':'命運正在洗牌…';await Promise.all([wait(reduceMotion?120:900),preloadImages(result)]);shuffleStage.hidden=true;heading.textContent=current.type==='jiaobei'?'筊杯正在落定…':'正在派牌…';
+    const dealGap=reduceMotion?0:Math.max(8,Math.min(105,900/result.length));result.forEach((item,index)=>{const article=document.createElement('article');article.className='card kind-'+item.type+(item.reversed?' reversed':'');article.style.animationDelay=(reduceMotion?0:index*dealGap)+'ms';const orderLabel=current.type==='jiaobei'?'第 '+(index+1)+' 次':'第 '+(index+1)+' 張';const positionLabel=current.type==='jiaobei'?item.detail:current.usesOrientation?(item.reversed?'↓ 逆位':'↑ 正位'):'無正逆位';article.innerHTML='<div class="card-inner"><div class="card-face card-back-face" aria-hidden="true"><div class="card-back"></div></div><div class="card-face card-front">'+cardArtwork(item,current,index)+'<div class="order">'+orderLabel+'</div><h3>'+item.name+'</h3><div class="position">'+positionLabel+'</div></div></div>';cards.append(article)});
+    await wait(reduceMotion?40:420+(result.length-1)*dealGap);heading.textContent=current.type==='jiaobei'?'正在揭示筊象…':'正在揭牌…';const flipGap=reduceMotion?0:Math.max(7,Math.min(90,720/result.length));[...cards.children].forEach((article,index)=>setTimeout(()=>article.classList.add('is-flipped'),index*flipGap));await wait(reduceMotion?40:560+(result.length-1)*flipGap);
+    summary.value=result.map((item,index)=>summaryLine(item,index,result.length,current)).join('\n');summary.rows=Math.min(12,result.length);heading.textContent=current.type==='jiaobei'?'擲筊 · 今輪擲咗 '+result.length+' 次':current.name+' · 今輪抽到 '+result.length+' 張牌';heading.parentElement.classList.remove('is-working');roundTag.textContent='第 '+(++round)+' 輪 · '+(current.type==='jiaobei'?'擲筊':duplicateToggle.checked?'可重複':'不重複');countInput.value='';
+  }catch(err){error.textContent=err.message}finally{animating=false;countInput.disabled=false;drawButton.disabled=false;duplicateToggle.disabled=false;methodInputs.forEach(input=>input.disabled=false);cardsTab.disabled=false;textTab.disabled=!document.getElementById('summary').value;updateMode()}
+});
+document.getElementById('copyResults').addEventListener('click',async()=>{const summary=document.getElementById('summary');const status=document.getElementById('copyStatus');if(!summary.value)return;try{if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error('Clipboard unavailable');await navigator.clipboard.writeText(summary.value);status.textContent='已複製，包含每個結果嘅換行。'}catch(error){summary.focus();summary.select();summary.setSelectionRange(0,summary.value.length);let copied=false;try{copied=document.execCommand('copy')}catch(error){}status.textContent=copied?'已複製，包含每個結果嘅換行。':'已選取全部結果，請長按文字框並選「複製」。'}});
+</script>
+</body>
+</html>
+

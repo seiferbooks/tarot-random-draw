@@ -24,25 +24,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Download the static site
+      - name: Build the static site
         shell: bash
         run: |
           set -euo pipefail
-          base="https://tarot-random-draw.shekteddy.chatgpt.site"
-          mkdir -p _site/cards _site/simple
-          curl -fsSL "$base/" -o _site/index.html
-          for n in $(seq -w 0 21); do
-            curl -fsSL "$base/cards/major-$n.webp" -o "_site/cards/major-$n.webp"
-          done
-          for suit in cups swords wands pentacles; do
-            for n in $(seq -w 1 14); do
-              curl -fsSL "$base/cards/$suit-$n.webp" -o "_site/cards/$suit-$n.webp"
-            done
-          done
-          curl -fsSL "$base/cards/SOURCE.txt" -o _site/cards/SOURCE.txt
+          mkdir -p _site/cards _site/simple _site/assets
+          cp animated/index.html _site/index.html
+          cp -R assets/generated _site/assets/generated
+          cp cards/*.webp _site/cards/
+          cp cards/SOURCE.txt _site/cards/SOURCE.txt
           cp simple/index.html _site/simple/index.html
           touch _site/.nojekyll
+          test -s _site/index.html
           test -s _site/simple/index.html
+          test "$(find _site/assets/generated -type f -name '*.webp' | wc -l)" -eq 3
           test "$(find _site/cards -type f -name '*.webp' | wc -l)" -eq 78
 
       - name: Configure GitHub Pages
