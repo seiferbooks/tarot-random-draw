@@ -8,6 +8,7 @@ A static divination site with animated shuffle, deal, and reveal sequences.
 - Traditional 36-card Lenormand deck with generated artwork
 - Traditional jiaobei casting with generated artwork
 - Optional repeated cards and independent upright/reversed orientations where applicable
+- Lenormand repeat mode permits reuse across rounds while every individual round remains duplicate-free
 - Short shuffle, deal, and card-reveal animation with a stable card layout
 - 1909 Rider–Waite–Smith public-domain artwork
 - Mobile-friendly numeric input, result tabs, and multiline copy support
